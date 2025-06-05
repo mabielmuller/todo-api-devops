@@ -26,7 +26,7 @@ Resources:
     Properties:
       InstanceType: t2.micro
       KeyName: !Ref KeyName
-      ImageId: ami-053b0d53c279acc90 # Ubuntu 22.04 LTS (us-east-1)
+      ImageId: ami-03cae36d8ec62f343 # Ubuntu 22.04 LTS (sa-east-1 - São Paulo)
       SecurityGroupIds:
         - !Ref TodoApiSecurityGroup
       UserData:
