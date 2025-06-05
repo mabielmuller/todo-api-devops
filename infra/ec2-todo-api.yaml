@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Infraestrutura da Todo API - EC2 + SG + UserData
+
+Parameters:
+  KeyName:
+    Description: Nome do par de chaves para acesso via SSH
+    Type: AWS::EC2::KeyPair::KeyName
+
+Resources:
+  TodoApiSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Permitir acesso a API e SSH
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  TodoApiInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      KeyName: !Ref KeyName
+      ImageId: ami-053b0d53c279acc90 # Ubuntu 22.04 LTS (us-east-1)
+      SecurityGroupIds:
+        - !Ref TodoApiSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo apt update -y
+          sudo apt install -y nodejs npm git
+          git clone https://github.com/mabielmuller/todo-api-devops.git
+          cd todo-api-devops
+          npm install
+          npm start
+
+Outputs:
+  InstancePublicIp:
+    Description: IP público da instância EC2
+    Value: !GetAtt TodoApiInstance.PublicIp
